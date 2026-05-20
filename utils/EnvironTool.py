@@ -9,7 +9,7 @@ config = {
 }
 
 # 加载提示词
-with open(Path(__file__).parent.parent / (config.get("PROMPT_FILE") or "prompt.md")) as f:
+with open(Path(__file__).parent.parent / (config.get("PROMPT_FILE") or "prompt.md"), 'r', encoding='utf-8') as f:
     config["PROMPT_TEXT"] = f.read()
 
 if __name__ == "__main__":

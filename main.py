@@ -24,12 +24,36 @@ def main():
     print("[wpy] 登入成功")
     print(f"[programme] 进入事件循环 监听#MP{config.get("WPY_POST")}")
     print(f"[programme] 循环间隔{config.get("WPY_INTERVAL")}秒 每次获取{config.get("WPY_FETCHNUM")}条")
+    isFirstCycle = True
     while True:
-        print(f"[cycle] 运行时间 {get_time()}")
+        print(f"\033[32m[cycle]\033[0m 运行时间 {get_time()}")
         # start cycle
-        
+        print(f"[cycle] 获取新回复")
+        newFloors = wpyHandler.get_new_floors()
+        if len(newFloors) == 0:
+            print(f"[main] 本轮没有检测到新回复")
+        for floor in newFloors:
+            print("*"*30)
+            print(f"[main] 处理回复id {floor["id"]}")
+            print(f"[main] 用户回复 {floor["content"]}")
+            if floor["content"] == "":
+                print(f"[skip] 空回复")
+                continue
+            if isFirstCycle:
+                print(f"[main] 首轮循环不回复")
+            else:
+                print(f"[main] 调用AI模型生成回复")
+                aiReply = aiHandler.send_request(floor["content"])
+                print(f"[main] AI回复 {aiReply}")
+                if config.get("DEBUG_MODE") == "true":
+                    print(f"[main] DEBUG_MODE未发送到微北洋")
+                else:
+                    wpyHandler.reply_to_floor(floor["id"], aiReply)
+            print("*"*30)
+            time.sleep(1) # 防止调用过快
         # end cycle
         print(f"[cycle] 下次运行时间 {get_time(int(config.get("WPY_INTERVAL") or 60))}")
+        isFirstCycle = False
         time.sleep(int(config.get("WPY_INTERVAL") or 60))
 
 if __name__ == "__main__":

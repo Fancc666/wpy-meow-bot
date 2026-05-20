@@ -3,7 +3,7 @@ import requests
 from utils.EnvironTool import config
 
 def heart_beat():
-    sl = int(config.get("HEART_BEAT_INTERVAL") or 60)
+    sl = int(config.get("HB_INTERVAL") or 60)
     print(f"[heart beat] started with interval {sl}s")
     while True:
         try:
